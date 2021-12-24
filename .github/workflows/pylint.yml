@@ -24,6 +24,6 @@ jobs:
         pipenv update
     - name: Analysing the code with pylint
       run: |
-        pipenv pylint `ls -R|grep .py$|xargs`
+        pipenv run pylint `ls -R|grep .py$|xargs`
       # Jobs time out minutes setting.
     timeout-minutes: 15
