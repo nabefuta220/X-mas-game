@@ -1,21 +1,54 @@
 
+import random
 import sys
 from typing import Dict, Tuple
 
 import pygame
-from pygame.constants import KEYDOWN, K_q
+from pygame.constants import KEYDOWN, QUIT, K_q
 from pygame.event import clear
 from pygame.sprite import Sprite
 
-
 SCREENSIZE = WIDTH, HEIGHT = 600, 400
 BLACK = (0, 0, 0)
+RED = (156, 0, 0)
 GREEN = (71, 126, 29)
-PADDING = PADTOPBOTTOM, PADLEFTRIGHT = 60, 60
+PADDING = PADTOPBOTTOM, PADLEFTRIGHT = 60, 60  # 余白
 # VARS:
 _VARS = {'surf': False}
 row = 5
 column = 8
+n = 3
+
+
+class target(Sprite):
+    """
+    ターゲットを表示するクラス
+    """
+
+    def __init__(self, position: Tuple[int, int], size: int):
+        """
+        画像の初期化
+
+        Parameters
+        ----------
+        position : (int,int)
+            中心の座標
+        size : int
+            画像のサイズ
+        """
+        super(target, self).__init__()
+        self.size = size
+        self.images = [pygame.image.load('img/target.png')]
+        self.rect = position
+        self.mode = 0
+        self.image = pygame.transform.scale(
+            self.images[self.mode], (int(self.size), int(self.size)))
+
+    def update(self):
+        """
+        1フレームごとに更新を行う
+        """
+        pass
 
 
 def calc_box_size(row: int, column: int):
@@ -39,6 +72,68 @@ def calc_box_size(row: int, column: int):
     vertical_cellsize = (HEIGHT - (PADTOPBOTTOM*2))//row
 
     return min(horizontal_cellsize, vertical_cellsize)
+
+
+class targets:
+    """
+    狙うものについてのクラス
+    """
+
+    def __init__(self, row, column, n):
+        # ターゲットの座標の抽選
+
+        self.unhit_list: dict[Tuple[int, int], target] = {}
+        self.hit_list: dict[Tuple[int, int], target] = []
+        box_size = calc_box_size(row, column)
+        while len(self.unhit_list) != n:
+            pos_x = random.randint(0, row-1)
+            pos_y = random.randint(0, column-1)
+            self.unhit_list[(pos_y, pos_x)] = target(
+                calc_center_position((pos_x, pos_y)), box_size)
+        self.group = pygame.sprite.Group(self.hit_list)
+
+    def cheak_hit(self, pos: Tuple[int, int]):
+        """
+        与えられた座標がヒットしているか確かめる
+
+        Parameters
+        ----------
+        pos : (int,int)
+            箱の座標
+        """
+        pos_x, pos_y = pos
+        if (pos_x, pos_y) in self.unhit_list:
+            self.hit_list.append(self.unhit_list[(pos_x, pos_y)])
+            del self.unhit_list[(pos_x, pos_y)]
+            # 画面描写
+            self.group = pygame.sprite.Group(self.hit_list)
+            if len(self.unhit_list) == 0:
+                font = pygame.font.Font(None, 55)
+                while True:
+                    # 画面を黒色に塗りつぶし
+                    text = font.render(
+                        "MERRY CHRISTMAS!", True, RED)   # 描画する文字列の設定
+                    _VARS['surf'].blit(text, [WIDTH/4, HEIGHT/2])  # 文字列の表示位置
+                    pygame.display.update()     # 画面を更新
+                    # イベント処理
+                    for event in pygame.event.get():
+                        if event.type == QUIT:  # 閉じるボタンが押されたら終了
+                            pygame.quit()       # Pygameの終了(画面閉じられる)
+                            sys.exit()
+
+    def update(self):
+        self.group.update()
+
+    def draw(self, surface):
+        """
+        surfaceにオブジェクトを描く
+
+        Parameters
+        ----------
+        surface : Surface
+            オブジェクトを描く対象
+        """
+        self.group.draw(surface)
 
 
 class precent_box(Sprite):
@@ -72,7 +167,6 @@ class precent_box(Sprite):
         """
         if self.mode == -1:
             self.kill()
-            print("killed")
 
     def change_flag(self):
         """
@@ -111,8 +205,8 @@ def calc_center_position(pos: Tuple[int, int]):
     """
     ボックスの中央の座標を取得する
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     pos : (int,int)
         ボックスの座標(左上を原点とし、(横、縦)する)
 
@@ -123,7 +217,7 @@ def calc_center_position(pos: Tuple[int, int]):
     """
     box_size = calc_box_size(row, column)
     pos_x, pos_y = pos
-    return(PADLEFTRIGHT + box_size*(pos_y), PADLEFTRIGHT+box_size*(pos_x))
+    return (PADLEFTRIGHT + box_size*(pos_y), PADLEFTRIGHT+box_size*(pos_x))
 
 
 class boxes:
@@ -154,6 +248,14 @@ class boxes:
         self.group.update()
 
     def draw(self, surface):
+        """
+        surface にオブジェクトを描く
+
+        Parameters
+        ----------
+        surface : Surface
+            オブジェクトを描く面
+        """
         self.group.draw(surface)
 
     def change_flag(self, pos):
@@ -172,15 +274,26 @@ class boxes:
         if self.box_list[open_pos].mode == 0:
             self.box_list[open_pos].open()
 
-            #self.box_list[open_pos] = None
+            # self.box_list[open_pos] = None
             self.group.clear(_VARS['surf'], clear_callback)
 
 
 def clear_callback(surf, rect):
+    """
+    描画域を緑で塗る
+
+    Parameters
+    -----------
+    surf : Surface
+        描く対象の面
+    rect : Any
+        描く対象の座標
+    """
     color = GREEN
     surf.fill(color, rect)
 
 
+targetes = targets(row, column, 4)
 box = boxes(row, column)
 
 
@@ -189,7 +302,7 @@ def main():
     実行用の関数
     """
     pygame.init()
-    global box
+    global box, targetes
     _VARS['surf'] = pygame.display.set_mode(SCREENSIZE)
     _VARS['surf'].fill(GREEN)
     draw_grid(row, column)
@@ -199,7 +312,9 @@ def main():
         check_events()
 
         box.update()
+        targetes.update()
         box.draw(_VARS['surf'])
+        targetes.draw(_VARS['surf'])
         draw_grid(row, column)
         pygame.display.update()
 
@@ -253,6 +368,7 @@ def check_events():
     イベントのチェック
     """
     global box
+    global targetes
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -262,12 +378,12 @@ def check_events():
         # クリックされたとき
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            print(pos, event.button)
             box_pos = get_box_position(pos)
             if event.button == 3 and box_pos is not None:
                 box.change_flag(box_pos)
             if event.button == 1 and box_pos is not None:
                 box.open(box_pos)
+                targetes.cheak_hit(box_pos)
 
 
 def get_box_position(pos: Tuple[int, int]):
@@ -291,7 +407,6 @@ def get_box_position(pos: Tuple[int, int]):
     box_pos_x = (pos_x-PADLEFTRIGHT)//box_size
     box_pos_y = (pos_y-PADTOPBOTTOM) // box_size
 
-    print(box_pos_x, box_pos_y)
     if 0 <= box_pos_x < column and 0 <= box_pos_y < row:
         return(box_pos_x, box_pos_y)
     return None
