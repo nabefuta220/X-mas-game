@@ -74,3 +74,22 @@ def get_box_position(pos: Tuple[int, int]):
     if 0 <= box_pos_x < column and 0 <= box_pos_y < row:
         return(box_pos_x, box_pos_y)
     return None
+
+
+def calc_center_position(pos: Tuple[int, int]):
+    """
+    ボックスの中央の座標を取得する
+
+    Paramters
+    ---------
+    pos : (int,int)
+        ボックスの座標(左上を原点とし、(横、縦)する)
+
+    Returns
+    -------
+    position : (int,int)
+        ボックスの中央の座標
+    """
+    box_size = calc_box_size(row, column)
+    pos_x, pos_y = pos
+    return(PADLEFTRIGHT + box_size*(pos_y), PADLEFTRIGHT+box_size*(pos_x))
