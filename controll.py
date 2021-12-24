@@ -6,7 +6,7 @@ import pygame
 import sys
 
 from pygame.constants import KEYDOWN, K_q
-from model import box_size
+from model import HEIGHT, PADLEFTRIGHT, PADTOPBOTTOM, WIDTH
 
 
 def check_events():
@@ -22,6 +22,30 @@ def check_events():
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             print(pos)
+            get_box_position(pos)
+
+
+def calc_box_size(row: int, column: int):
+    """
+    箱のサイズを計算する
+
+    Parameters
+    ----------
+    row : int
+        縦のサイズ
+    column : int
+        横のサイズ
+
+    Returns
+    -------
+    box_size : int
+        箱のサイズ
+    """
+    # サイズの限界を取得する
+    horizontal_cellsize = (WIDTH - (PADLEFTRIGHT*2))//column
+    vertical_cellsize = (HEIGHT - (PADTOPBOTTOM*2))//row
+
+    return min(horizontal_cellsize, vertical_cellsize)
 
 
 def get_box_position(pos: Tuple[int, int]):
@@ -39,4 +63,9 @@ def get_box_position(pos: Tuple[int, int]):
         クリックしたボックスの座標(左上を原点とする)
         そのような座標がなければNoneとする
     """
-    global box_size
+
+    pos_x, pos_y = pos
+    box_pos_x = (pos_x-PADLEFTRIGHT)//box_size
+    box_pos_y = (pos_y-PADTOPBOTTOM) // box_size
+
+    print(box_pos_x, box_pos_y)
