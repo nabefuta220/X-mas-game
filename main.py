@@ -4,6 +4,7 @@ from typing import Dict, Tuple
 
 import pygame
 from pygame.constants import KEYDOWN, K_q
+from pygame.event import clear
 from pygame.sprite import Sprite
 
 
@@ -69,12 +70,23 @@ class precent_box(Sprite):
         """
         1フレームごとに更新を行う
         """
-        pass
+        if self.mode == -1:
+            self.kill()
+            print("killed")
 
     def change_flag(self):
+        """
+        旗を切り替える
+        """
         self.mode = not self.mode
         self.image = pygame.transform.scale(
             self.images[self.mode], (int(self.size), int(self.size)))
+
+    def open(self):
+        """
+        この箱を開く
+        """
+        self.mode = -1
 
     def rotate_center_image(self):
         """
@@ -151,6 +163,23 @@ class boxes:
         pos_x, pos_y = pos
         self.box_list[(pos_y, pos_x)].change_flag()
 
+    def open(self, pos):
+        """
+        posの箱を開く
+        """
+        pos_x, pos_y = pos
+        open_pos = (pos_y, pos_x)
+        if self.box_list[open_pos].mode == 0:
+            self.box_list[open_pos].open()
+
+            #self.box_list[open_pos] = None
+            self.group.clear(_VARS['surf'], clear_callback)
+
+
+def clear_callback(surf, rect):
+    color = GREEN
+    surf.fill(color, rect)
+
 
 box = boxes(row, column)
 
@@ -165,11 +194,13 @@ def main():
     _VARS['surf'].fill(GREEN)
     draw_grid(row, column)
     box.change_flag((0, 1))
+
     while True:
         check_events()
 
         box.update()
         box.draw(_VARS['surf'])
+        draw_grid(row, column)
         pygame.display.update()
 
 
@@ -232,9 +263,11 @@ def check_events():
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             print(pos, event.button)
-            get_box_position(pos)
-            if event.button == 3:
-                box.change_flag(get_box_position(pos))
+            box_pos = get_box_position(pos)
+            if event.button == 3 and box_pos is not None:
+                box.change_flag(box_pos)
+            if event.button == 1 and box_pos is not None:
+                box.open(box_pos)
 
 
 def get_box_position(pos: Tuple[int, int]):
