@@ -1,0 +1,101 @@
+"""
+表示に関わる部分の作成
+"""
+from typing import Collection
+from pygame.locals import KEYDOWN, K_q
+import pygame
+import sys
+
+
+# CONSTANTS:
+SCREENSIZE = WIDTH, HEIGHT = 600, 400
+BLACK = (0, 0, 0)
+GREEN = (71, 126, 29)
+PADDING = PADTOPBOTTOM, PADLEFTRIGHT = 60, 60
+# VARS:
+_VARS = {'surf': False}
+
+
+def create_gred(row: int, column: int):
+
+    row_size = HEIGHT//row
+
+    column_size = WIDTH//column
+
+    print(row_size, column_size)
+
+
+def main():
+    pygame.init()
+    _VARS['surf'] = pygame.display.set_mode(SCREENSIZE)
+    while True:
+        checkEvents()
+        _VARS['surf'].fill(GREEN)
+        drawGrid(5, 6)
+        pygame.display.update()
+
+
+def drawGrid(row: int, column: int):
+    """
+    縦がrow,横がcolnmnの盤面を作成する
+
+    Parameters
+    -----------
+    row : int
+        縦
+    column : int
+        横
+
+    Returns
+    -------
+    size : int
+        画面のサイズ
+    """
+    # サイズを取得する
+    horizontal_cellsize = (WIDTH - (PADLEFTRIGHT*2))//column
+    vertical_cellsize = (HEIGHT - (PADTOPBOTTOM*2))//row
+
+    # サイズをどちらかの最小値に調整する
+    horizontal_cellsize = min(horizontal_cellsize, vertical_cellsize)
+    vertical_cellsize = horizontal_cellsize
+
+    # 上限・下限の設定
+    left = PADLEFTRIGHT
+    right = PADLEFTRIGHT+horizontal_cellsize*column
+    up = PADTOPBOTTOM
+    bottom = PADTOPBOTTOM + vertical_cellsize*row
+    # 基準座標の設定
+    top_left = (left, up)
+    top_right = (right, up)
+    bottom_left = (left, bottom)
+    bottom_right = (right, bottom)
+    pygame.draw.line(_VARS['surf'], BLACK, top_left, top_right, 2)    # 上辺
+    pygame.draw.line(_VARS['surf'], BLACK, bottom_left, bottom_right, 2)  # 下辺
+    pygame.draw.line(_VARS['surf'], BLACK, top_left, bottom_left, 2)  # 左辺
+    pygame.draw.line(_VARS['surf'], BLACK, top_right, bottom_right, 2)  # 右辺
+
+    # 横に分ける
+    for x in range(column):
+        pygame.draw.line(
+            _VARS['surf'], BLACK,
+            (0 + PADLEFTRIGHT+horizontal_cellsize*x, up),
+            (0 + PADLEFTRIGHT+horizontal_cellsize*x, bottom), 2)
+    for y in range(row):
+        # 縦に分ける
+        pygame.draw.line(
+            _VARS['surf'], BLACK,
+            (left, 0 + PADTOPBOTTOM + vertical_cellsize*y),
+            (right, 0 + PADTOPBOTTOM + vertical_cellsize*y), 2)
+
+
+def checkEvents():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+        elif event.type == KEYDOWN and event.key == K_q:
+            pygame.quit()
+            sys.exit()
+
+
+if __name__ == '__main__':
+    main()
