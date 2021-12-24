@@ -2,7 +2,6 @@
 表示に関わる部分の作成
 """
 import sys
-from typing import Collection
 
 import pygame
 from pygame.locals import KEYDOWN, K_q
@@ -16,8 +15,6 @@ PADDING = PADTOPBOTTOM, PADLEFTRIGHT = 60, 60
 _VARS = {'surf': False}
 
 
-
-
 def main():
     """
     実行用の関数
@@ -25,13 +22,13 @@ def main():
     pygame.init()
     _VARS['surf'] = pygame.display.set_mode(SCREENSIZE)
     while True:
-        checkEvents()
+        check_events()
         _VARS['surf'].fill(GREEN)
-        drawGrid(5, 6)
+        draw_grid(5, 6)
         pygame.display.update()
 
 
-def drawGrid(row: int, column: int):
+def draw_grid(row: int, column: int):
     """
     縦がrow,横がcolnmnの盤面を作成する
 
@@ -84,7 +81,8 @@ def drawGrid(row: int, column: int):
             (right, 0 + PADTOPBOTTOM + vertical_cellsize*y), 2)
     return horizontal_cellsize
 
-def checkEvents():
+
+def check_events():
     """
     イベントのチェック
     """
