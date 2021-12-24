@@ -16,16 +16,12 @@ PADDING = PADTOPBOTTOM, PADLEFTRIGHT = 60, 60
 _VARS = {'surf': False}
 
 
-def create_gred(row: int, column: int):
-
-    row_size = HEIGHT//row
-
-    column_size = WIDTH//column
-
-    print(row_size, column_size)
 
 
 def main():
+    """
+    実行用の関数
+    """
     pygame.init()
     _VARS['surf'] = pygame.display.set_mode(SCREENSIZE)
     while True:
@@ -86,9 +82,12 @@ def drawGrid(row: int, column: int):
             _VARS['surf'], BLACK,
             (left, 0 + PADTOPBOTTOM + vertical_cellsize*y),
             (right, 0 + PADTOPBOTTOM + vertical_cellsize*y), 2)
-
+    return horizontal_cellsize
 
 def checkEvents():
+    """
+    イベントのチェック
+    """
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
