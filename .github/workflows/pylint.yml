@@ -24,6 +24,7 @@ jobs:
         pipenv update --dev
     - name: Analysing the code with pylint
       run: |
+        pip install pygame
         pipenv run pylint `ls -R|grep .py$|xargs`
     - name: test code
       run: |
