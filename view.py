@@ -1,11 +1,11 @@
 """
 表示に関わる部分の作成
 """
-from typing import Collection
-from pygame.locals import KEYDOWN, K_q
-import pygame
 import sys
+from typing import Collection
 
+import pygame
+from pygame.locals import KEYDOWN, K_q
 
 # CONSTANTS:
 SCREENSIZE = WIDTH, HEIGHT = 600, 400
