@@ -6,26 +6,11 @@ import sys
 import pygame
 from pygame.locals import KEYDOWN, K_q
 
-# CONSTANTS:
-SCREENSIZE = WIDTH, HEIGHT = 600, 400
-BLACK = (0, 0, 0)
-GREEN = (71, 126, 29)
-PADDING = PADTOPBOTTOM, PADLEFTRIGHT = 60, 60
-# VARS:
-_VARS = {'surf': False}
+from model import _VARS, BLACK, HEIGHT, PADLEFTRIGHT, PADTOPBOTTOM, WIDTH
 
 
-def main():
-    """
-    実行用の関数
-    """
-    pygame.init()
-    _VARS['surf'] = pygame.display.set_mode(SCREENSIZE)
-    while True:
-        check_events()
-        _VARS['surf'].fill(GREEN)
-        draw_grid(5, 6)
-        pygame.display.update()
+
+
 
 
 def draw_grid(row: int, column: int):
@@ -82,17 +67,6 @@ def draw_grid(row: int, column: int):
     return horizontal_cellsize
 
 
-def check_events():
-    """
-    イベントのチェック
-    """
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-        elif event.type == KEYDOWN and event.key == K_q:
-            pygame.quit()
-            sys.exit()
 
 
-if __name__ == '__main__':
-    main()
+
