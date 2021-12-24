@@ -5,12 +5,9 @@ import sys
 
 import pygame
 from pygame.locals import KEYDOWN, K_q
-
+from pygame.version import ver
+from controll import calc_box_size
 from model import _VARS, BLACK, HEIGHT, PADLEFTRIGHT, PADTOPBOTTOM, WIDTH
-
-
-
-
 
 
 def draw_grid(row: int, column: int):
@@ -23,25 +20,15 @@ def draw_grid(row: int, column: int):
         縦
     column : int
         横
-
-    Returns
-    -------
-    size : int
-        画面のサイズ
     """
     # サイズを取得する
-    horizontal_cellsize = (WIDTH - (PADLEFTRIGHT*2))//column
-    vertical_cellsize = (HEIGHT - (PADTOPBOTTOM*2))//row
-
-    # サイズをどちらかの最小値に調整する
-    horizontal_cellsize = min(horizontal_cellsize, vertical_cellsize)
-    vertical_cellsize = horizontal_cellsize
+    box_size = calc_box_size(row, column)
 
     # 上限・下限の設定
     left = PADLEFTRIGHT
-    right = PADLEFTRIGHT+horizontal_cellsize*column
+    right = PADLEFTRIGHT+box_size*column
     up = PADTOPBOTTOM
-    bottom = PADTOPBOTTOM + vertical_cellsize*row
+    bottom = PADTOPBOTTOM + box_size*row
     # 基準座標の設定
     top_left = (left, up)
     top_right = (right, up)
@@ -56,17 +43,11 @@ def draw_grid(row: int, column: int):
     for x in range(column):
         pygame.draw.line(
             _VARS['surf'], BLACK,
-            (0 + PADLEFTRIGHT+horizontal_cellsize*x, up),
-            (0 + PADLEFTRIGHT+horizontal_cellsize*x, bottom), 2)
+            (0 + PADLEFTRIGHT+box_size*x, up),
+            (0 + PADLEFTRIGHT+box_size*x, bottom), 2)
     for y in range(row):
         # 縦に分ける
         pygame.draw.line(
             _VARS['surf'], BLACK,
-            (left, 0 + PADTOPBOTTOM + vertical_cellsize*y),
-            (right, 0 + PADTOPBOTTOM + vertical_cellsize*y), 2)
-    return horizontal_cellsize
-
-
-
-
-
+            (left, 0 + PADTOPBOTTOM + box_size*y),
+            (right, 0 + PADTOPBOTTOM + box_size*y), 2)

@@ -7,6 +7,7 @@ import sys
 
 from pygame.constants import KEYDOWN, K_q
 from model import HEIGHT, PADLEFTRIGHT, PADTOPBOTTOM, WIDTH
+from model import row, column
 
 
 def check_events():
@@ -60,12 +61,16 @@ def get_box_position(pos: Tuple[int, int]):
     Returns
     -------
     box_pos : (int,int) | None
-        クリックしたボックスの座標(左上を原点とする)
+        クリックしたボックスの座標(左上を原点とし、(横、縦)する)
         そのような座標がなければNoneとする
     """
 
     pos_x, pos_y = pos
+    box_size = calc_box_size(row, column)
     box_pos_x = (pos_x-PADLEFTRIGHT)//box_size
     box_pos_y = (pos_y-PADTOPBOTTOM) // box_size
 
     print(box_pos_x, box_pos_y)
+    if 0 <= box_pos_x < column and 0 <= box_pos_y < row:
+        return(box_pos_x, box_pos_y)
+    return None

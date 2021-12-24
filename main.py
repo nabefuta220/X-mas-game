@@ -1,11 +1,10 @@
 import pygame
 from controll import check_events
 
-from model import _VARS, GREEN, SCREENSIZE,box_size
+from model import _VARS, GREEN, SCREENSIZE,row,column
 from view import draw_grid
 
 def main():
-    global box_size
     """
     実行用の関数
     """
@@ -14,9 +13,9 @@ def main():
     while True:
         check_events()
         _VARS['surf'].fill(GREEN)
-        box_size = draw_grid(5, 6)
+        draw_grid(row, column)
         pygame.display.update()
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
