@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 Pipfile.lock
-setting.json
+.vscode/*
